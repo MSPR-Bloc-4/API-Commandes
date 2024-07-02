@@ -15,4 +15,4 @@ WORKDIR /app
 COPY --from=build-env /app/out .
 EXPOSE 80
 ENV ASPNETCORE_URLS=http://*:80
-ENTRYPOINT ["dotnet", "Client-Api.dll"]
+ENTRYPOINT ["dotnet", "Order-Api.dll"]
