@@ -26,12 +26,12 @@ public class OrderService : IOrderService
     public async Task<string> CreateOrder(Order order)
     {
         var result = await _orderRepository.CreateOrder(order);
-        TopicName topicName = new TopicName(_firebaseConfig.ProjectId, "order-created");
+        TopicName topicName = new TopicName(_firebaseConfig.ProjectId, "order");
 
         string message = string.Join(",", order.Products);
         PubsubMessage pubsubMessage = new PubsubMessage
         {
-            Data = ByteString.CopyFromUtf8(message)
+            Attributes = { ["StockDecrement"] = message }
         };
         await _publisherClient.PublishAsync(topicName, new[] { pubsubMessage });          
 
@@ -60,7 +60,7 @@ public class OrderService : IOrderService
 
     public async Task DeleteOrdersByUserId(string userId)
     {
-        TopicName topicName = new TopicName(_firebaseConfig.ProjectId, "order-deleted");
+        TopicName topicName = new TopicName(_firebaseConfig.ProjectId, "order");
         var orders = await _orderRepository.GetOrdersByUserId(userId);
         var productIds = orders.SelectMany(o => o.Products).ToList();
         var orderIds = orders.Select(o => o.Id).ToList();
@@ -72,7 +72,7 @@ public class OrderService : IOrderService
             string message = string.Join(",", productIds);
             PubsubMessage pubsubMessage = new PubsubMessage
             {
-                Data = ByteString.CopyFromUtf8(message)
+                Attributes = { ["StockIncrement"] = message }
             };
             await _publisherClient.PublishAsync(topicName, new[] { pubsubMessage });          
         }
