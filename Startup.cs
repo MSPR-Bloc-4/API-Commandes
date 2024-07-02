@@ -1,12 +1,9 @@
 using Google.Apis.Auth.OAuth2;
 using Google.Cloud.Firestore;
 using Google.Cloud.PubSub.V1;
-using Grpc.Auth;
 using Order_Api.Configuration;
 using Order_Api.Repository;
 using Order_Api.Repository.Interface;
-using PubSubLibrary;
-using Grpc.Core;
 using Order_Api.Service;
 
 namespace Order_Api
@@ -42,18 +39,12 @@ namespace Order_Api
 
             // Add FirestoreDb as a singleton service
             services.AddSingleton(db);
-
-            // Add PubSubService as a singleton service
-            services.AddSingleton<PubSubService>(provider =>
-            {
-                return new PubSubService(firebaseConfig.ProjectId, credential.ToChannelCredentials());
-            });
+            
             SubscriptionName subscriptionName = SubscriptionName.FromProjectSubscription(firebaseConfig.ProjectId, "user-deleted-sub");
             services.AddSubscriberClient(builder =>
             {
                 builder.SubscriptionName = subscriptionName;
                 builder.CredentialsPath = firebaseConfig.ServiceAccountPath;
-                // Other settings to customize the client.
             });
             services.AddSingleton<IOrderRepository, OrderRepository>();
             services.AddHostedService<SubscriberService>();
