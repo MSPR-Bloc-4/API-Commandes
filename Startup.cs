@@ -5,6 +5,7 @@ using Order_Api.Configuration;
 using Order_Api.Repository;
 using Order_Api.Repository.Interface;
 using Order_Api.Service;
+using Order_Api.Service.Interface;
 
 namespace Order_Api
 {
@@ -47,6 +48,7 @@ namespace Order_Api
                 builder.CredentialsPath = firebaseConfig.ServiceAccountPath;
             });
             services.AddSingleton<IOrderRepository, OrderRepository>();
+            services.AddSingleton<IOrderService, OrderService>();
             services.AddHostedService<SubscriberService>();
 
             services.AddControllers();
