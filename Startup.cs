@@ -24,9 +24,19 @@ namespace Order_Api
             var firebaseConfig = _configuration.GetSection("FirebaseConfig").Get<FirebaseConfig>();
 
             GoogleCredential credential;
-            using (var stream = new FileStream(firebaseConfig.ServiceAccountPath, FileMode.Open, FileAccess.Read))
+            if (Environment.GetEnvironmentVariable("FIREBASE_CREDENTIALS") != null)
             {
-                credential = GoogleCredential.FromStream(stream);
+                using (var stream = new MemoryStream(System.Text.Encoding.UTF8.GetBytes(Environment.GetEnvironmentVariable("FIREBASE_CREDENTIALS"))))
+                {
+                    credential = GoogleCredential.FromStream(stream);
+                }
+            }
+            else
+            {
+                using (var stream = new FileStream("firebase_credentials.json", FileMode.Open, FileAccess.Read))
+                {
+                    credential = GoogleCredential.FromStream(stream);
+                }
             }
 
             FirestoreDbBuilder builder = new FirestoreDbBuilder
@@ -45,7 +55,7 @@ namespace Order_Api
             services.AddSubscriberClient(builder =>
             {
                 builder.SubscriptionName = subscriptionName;
-                builder.CredentialsPath = firebaseConfig.ServiceAccountPath;
+                builder.Credential = credential;
             });
             services.AddSingleton<IOrderRepository, OrderRepository>();
             services.AddSingleton<IOrderService, OrderService>();

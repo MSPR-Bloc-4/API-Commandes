@@ -1,5 +1,5 @@
+using Google.Apis.Auth.OAuth2;
 using Google.Cloud.PubSub.V1;
-using Google.Protobuf;
 using Microsoft.Extensions.Options;
 using Order_Api.Configuration;
 using Order_Api.Model;
@@ -13,15 +13,31 @@ public class OrderService : IOrderService
     private readonly IOrderRepository _orderRepository;
     private readonly PublisherServiceApiClient _publisherClient;
     private readonly FirebaseConfig _firebaseConfig;
-
+    
     public OrderService(IOrderRepository orderRepository, IOptions<FirebaseConfig> firebaseConfig)
     {
+        GoogleCredential credential;
+        if (Environment.GetEnvironmentVariable("FIREBASE_CREDENTIALS") != null)
+        {
+            using (var stream = new MemoryStream(System.Text.Encoding.UTF8.GetBytes(Environment.GetEnvironmentVariable("FIREBASE_CREDENTIALS"))))
+            {
+                credential = GoogleCredential.FromStream(stream);
+            }
+        }
+        else
+        {
+            using (var stream = new FileStream("firebase_credentials.json", FileMode.Open, FileAccess.Read))
+            {
+                credential = GoogleCredential.FromStream(stream);
+            }
+        }
         _orderRepository = orderRepository;
         _firebaseConfig = firebaseConfig.Value;
         _publisherClient = new PublisherServiceApiClientBuilder
         {
-            CredentialsPath = _firebaseConfig.ServiceAccountPath
-        }.Build();    }
+            Credential = credential
+        }.Build();    
+    }
 
     public async Task<string> CreateOrder(Order order)
     {

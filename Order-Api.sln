@@ -2,6 +2,8 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Order-Api", "Order-Api.csproj", "{5DEBF13C-9B54-4798-9B50-2DB137370900}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Order-Api.Tests", "Order-Api.Tests\Order-Api.Tests.csproj", "{1420E716-6CF5-424B-81BB-BDFE9591BA4D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -12,5 +14,9 @@ Global
 		{5DEBF13C-9B54-4798-9B50-2DB137370900}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5DEBF13C-9B54-4798-9B50-2DB137370900}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5DEBF13C-9B54-4798-9B50-2DB137370900}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1420E716-6CF5-424B-81BB-BDFE9591BA4D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1420E716-6CF5-424B-81BB-BDFE9591BA4D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1420E716-6CF5-424B-81BB-BDFE9591BA4D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1420E716-6CF5-424B-81BB-BDFE9591BA4D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
