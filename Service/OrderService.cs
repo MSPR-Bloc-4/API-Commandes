@@ -1,7 +1,6 @@
 using Google.Apis.Auth.OAuth2;
 using Google.Cloud.PubSub.V1;
-using Microsoft.Extensions.Options;
-using Order_Api.Configuration;
+using Order_Api.Helper;
 using Order_Api.Model;
 using Order_Api.Repository.Interface;
 using Order_Api.Service.Interface;
@@ -12,10 +11,11 @@ public class OrderService : IOrderService
 {
     private readonly IOrderRepository _orderRepository;
     private readonly PublisherServiceApiClient _publisherClient;
-    private readonly FirebaseConfig _firebaseConfig;
+    private readonly string projectId;
     
-    public OrderService(IOrderRepository orderRepository, IOptions<FirebaseConfig> firebaseConfig)
+    public OrderService(IOrderRepository orderRepository)
     {
+        projectId = Environment.GetEnvironmentVariable("FIREBASE_PROJECTID") ?? JsonReader.GetFieldFromJsonFile("project_id");
         GoogleCredential credential;
         if (Environment.GetEnvironmentVariable("FIREBASE_CREDENTIALS") != null)
         {
@@ -32,7 +32,6 @@ public class OrderService : IOrderService
             }
         }
         _orderRepository = orderRepository;
-        _firebaseConfig = firebaseConfig.Value;
         _publisherClient = new PublisherServiceApiClientBuilder
         {
             Credential = credential
@@ -42,7 +41,7 @@ public class OrderService : IOrderService
     public async Task<string> CreateOrder(Order order)
     {
         var result = await _orderRepository.CreateOrder(order);
-        TopicName topicName = new TopicName(_firebaseConfig.ProjectId, "order");
+        TopicName topicName = new TopicName(projectId, "order");
 
         string message = string.Join(",", order.Products);
         PubsubMessage pubsubMessage = new PubsubMessage
@@ -76,7 +75,7 @@ public class OrderService : IOrderService
 
     public async Task DeleteOrdersByUserId(string userId)
     {
-        TopicName topicName = new TopicName(_firebaseConfig.ProjectId, "order");
+        TopicName topicName = new TopicName(projectId, "order");
         var orders = await _orderRepository.GetOrdersByUserId(userId);
         var productIds = orders.SelectMany(o => o.Products).ToList();
         var orderIds = orders.Select(o => o.Id).ToList();

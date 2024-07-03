@@ -1,5 +1,4 @@
 using Google.Cloud.PubSub.V1;
-using Order_Api.Repository.Interface;
 using Order_Api.Service.Interface;
 
 namespace Order_Api.Service;
