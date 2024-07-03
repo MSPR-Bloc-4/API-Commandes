@@ -1,7 +1,7 @@
 using Google.Apis.Auth.OAuth2;
 using Google.Cloud.Firestore;
 using Google.Cloud.PubSub.V1;
-using Order_Api.Configuration;
+using Order_Api.Helper;
 using Order_Api.Repository;
 using Order_Api.Repository.Interface;
 using Order_Api.Service;
@@ -20,9 +20,7 @@ namespace Order_Api
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.Configure<FirebaseConfig>(_configuration.GetSection("FirebaseConfig"));
-            var firebaseConfig = _configuration.GetSection("FirebaseConfig").Get<FirebaseConfig>();
-
+            var projectId = Environment.GetEnvironmentVariable("FIREBASE_PROJECTID") ?? JsonReader.GetFieldFromJsonFile("project_id");
             GoogleCredential credential;
             if (Environment.GetEnvironmentVariable("FIREBASE_CREDENTIALS") != null)
             {
@@ -41,7 +39,7 @@ namespace Order_Api
 
             FirestoreDbBuilder builder = new FirestoreDbBuilder
             {
-                ProjectId = firebaseConfig.ProjectId,
+                ProjectId = projectId,
                 DatabaseId = "order",
                 Credential = credential
             };
@@ -51,7 +49,7 @@ namespace Order_Api
             // Add FirestoreDb as a singleton service
             services.AddSingleton(db);
             
-            SubscriptionName subscriptionName = SubscriptionName.FromProjectSubscription(firebaseConfig.ProjectId, "user-deleted-sub");
+            SubscriptionName subscriptionName = SubscriptionName.FromProjectSubscription(projectId, "user-deleted-sub");
             services.AddSubscriberClient(builder =>
             {
                 builder.SubscriptionName = subscriptionName;

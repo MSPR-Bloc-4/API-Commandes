@@ -1,9 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Threading.Tasks;
 using Google.Apis.Auth.OAuth2;
 using Google.Cloud.Firestore;
+using Order_Api.Helper;
 using Order_Api.Model;
 using Order_Api.Repository;
 using Xunit;
@@ -33,7 +30,7 @@ namespace Order_Api.Tests
                 }
             }
 
-            var projectId = "payetonkawa-84a8c";
+            var projectId = Environment.GetEnvironmentVariable("FIREBASE_PROJECTID") ?? JsonReader.GetFieldFromJsonFile("project_id");
             var builder = new FirestoreDbBuilder
             {
                 Credential = credential,
