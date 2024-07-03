@@ -50,15 +50,31 @@ namespace Order_Api.Repository
             await _collectionReference.Document(orderId).DeleteAsync();
         }
 
-        public async Task DeleteOrdersByUserId(string userId)
+        public Task DeleteOrdersByUserId(string userId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<List<Order>> GetOrdersByUserId(string userId)
         {
             var querySnapshot = await _collectionReference
                 .WhereEqualTo("UserId", userId)
                 .GetSnapshotAsync();
 
+            List<Order> orders = new List<Order>();
             foreach (var document in querySnapshot.Documents)
             {
-                await document.Reference.DeleteAsync();
+                orders.Add(document.ConvertTo<Order>());
+            }
+
+            return orders;
+        }
+        
+        public async Task DeleteOrdersByIds(List<string> orderIds)
+        {
+            foreach (var orderId in orderIds)
+            {
+                await _collectionReference.Document(orderId).DeleteAsync();
             }
         }
     }

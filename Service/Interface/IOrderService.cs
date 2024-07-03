@@ -1,15 +1,13 @@
 using Order_Api.Model;
 
-namespace Order_Api.Repository.Interface;
+namespace Order_Api.Service.Interface;
 
-public interface IOrderRepository
+public interface IOrderService
 {
     Task<string> CreateOrder(Order order);
     Task<Order> GetOrderById(string orderId);
     Task<List<Order>> GetAllOrders();
     Task UpdateOrder(string orderId, Order order);
     Task DeleteOrder(string orderId);
-    Task DeleteOrdersByIds(List<string> orderIds);
-    Task<List<Order>> GetOrdersByUserId(string userId);
-
+    Task DeleteOrdersByUserId(string userId);
 }

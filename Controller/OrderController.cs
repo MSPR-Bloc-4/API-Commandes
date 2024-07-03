@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Order_Api.Model;
-using Order_Api.Repository.Interface;
+using Order_Api.Service.Interface;
 
 namespace Order_Api.Controller
 {
@@ -8,11 +8,11 @@ namespace Order_Api.Controller
     [ApiController]
     public class OrderController : ControllerBase
     {
-        private readonly IOrderRepository _orderRepository;
+        private readonly IOrderService _orderService;
 
-        public OrderController(IOrderRepository orderRepository)
+        public OrderController(IOrderService orderService)
         {
-            _orderRepository = orderRepository ?? throw new ArgumentNullException(nameof(orderRepository));
+            _orderService = orderService;
         }
 
         [HttpPost]
@@ -20,7 +20,7 @@ namespace Order_Api.Controller
         {
             try
             {
-                string orderId = await _orderRepository.CreateOrder(order);
+                string orderId = await _orderService.CreateOrder(order);
                 return Ok(orderId);
             }
             catch (Exception ex)
@@ -34,7 +34,7 @@ namespace Order_Api.Controller
         {
             try
             {
-                Order order = await _orderRepository.GetOrderById(orderId);
+                Order order = await _orderService.GetOrderById(orderId);
                 if (order == null)
                 {
                     return NotFound();
@@ -52,7 +52,7 @@ namespace Order_Api.Controller
         {
             try
             {
-                List<Order> orders = await _orderRepository.GetAllOrders();
+                List<Order> orders = await _orderService.GetAllOrders();
                 return Ok(orders);
             }
             catch (Exception ex)
@@ -66,7 +66,7 @@ namespace Order_Api.Controller
         {
             try
             {
-                await _orderRepository.UpdateOrder(orderId, updatedOrder);
+                await _orderService.UpdateOrder(orderId, updatedOrder);
                 return Ok();
             }
             catch (Exception ex)
@@ -80,7 +80,7 @@ namespace Order_Api.Controller
         {
             try
             {
-                await _orderRepository.DeleteOrder(orderId);
+                await _orderService.DeleteOrder(orderId);
                 return Ok();
             }
             catch (Exception ex)
